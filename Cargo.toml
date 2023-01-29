@@ -6,3 +6,6 @@ edition = "2021"
 [dependencies]
 actix-web = "4"
 lambda-web = { version = "0.2.0", features=["actix4"] }
+
+[features]
+integration=[]
