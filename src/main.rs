@@ -1,14 +1,12 @@
-use lambda_web::actix_web::{self, get, App, HttpServer, Responder};
-use lambda_web::{is_running_on_lambda, run_actix_on_lambda, LambdaError};
+mod controller;
 
-#[get("/")]
-async fn hello() -> impl Responder {
-    format!("Hello")
-}
+use lambda_web::actix_web::{self, App, HttpServer};
+use lambda_web::{is_running_on_lambda, run_actix_on_lambda, LambdaError};
+use controller::account_controller::list_accounts;
 
 #[actix_web::main]
 async fn main() -> Result<(), LambdaError> {
-    let factory = move || App::new().service(hello);
+    let factory = move || App::new().service(list_accounts);
 
     if is_running_on_lambda() {
         // Run on AWS Lambda
