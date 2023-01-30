@@ -12,9 +12,22 @@ For the problem, i'm creating a simple api to manage montly expenses and account
 
 ## Diagram
 
-![Architecture Diagram](/dev/architecture//playground_api.drawio.png?raw=true)
+![Architecture Diagram](/dev/architecture/playground_api.drawio.png?raw=true)
+
+## Pipeline
+
+![Pipeline](/dev/architecture/playground_api-Pipeline.drawio.png?raw=true)
 
 ## Database
+
+## Infrastructure
+
+* [AWS CDK](https://aws.amazon.com/cdk/) will be used to manage and deploy all infrastructure related to this project
+* The pipeline will be configured using [Github Actions](https://github.com/features/actions)
+* The development stage will be deployed locally as a copy of beta stage (reusing resources like databases)
+* Beta stage will be a stable environment used to run integration tests
+* Devo, Beta and Prod stages will remain in the same account on different regions (us-west-2 for beta and us-east-1 for prod)
+    * This is not ideal for a real life application as it poses high risks of Beta and Devo affecting Prod environment, but as this project if a playground, i will keep it simple with one account only
 
 ### Accounts
 
