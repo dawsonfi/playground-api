@@ -48,7 +48,9 @@ Schema:
         "OPEN",
         "CLOSED",
         "NOT_IN_USE"
-    ]
+    ],
+    "created_at": "dd/mm/yyyy",
+    "updated_at": "dd/mm/yyyy"
 }
 ```
 
@@ -66,6 +68,8 @@ Schema:
     "expense_id": "expenses:id",
     "description": "string",
     "date": "dd/mm/yyyy",
+    "month": "number",
+    "year": "number",
     "value": {
         "currency": ["BRL", "USD", "EUR", "..."],
         "value": "double"
@@ -82,7 +86,9 @@ Schema:
     "status": [
         "OPEN",
         "CLOSED"
-    ]
+    ],
+    "created_at": "dd/mm/yyyy",
+    "updated_at": "dd/mm/yyyy"
 }
 ```
 
@@ -121,7 +127,13 @@ Schema:
         "VARIABLE",
         "ONE_TIME",
         "LEND"
-    ]
+    ],
+    "status": [
+        "OPEN",
+        "CLOSED"
+    ],
+    "created_at": "dd/mm/yyyy",
+    "updated_at": "dd/mm/yyyy"
 }
 ```
 
@@ -207,19 +219,194 @@ Respose:
 }]
 ```
 
-
 ### Add/Update Transaction
 
-TODO
+* POST `/transactions`
+* POST `/transactions/id`
+
+Request:
+
+```json
+{
+    "source_id": "accounts:id",
+    "destination_id": "accounts:id",
+    "expense_id": "expenses:id",
+    "description": "string",
+    "date": "dd/mm/yyyy",
+    "month": "number",
+    "year": "number",
+    "value": {
+        "currency": ["BRL", "USD", "EUR", "..."],
+        "value": "double"
+    },
+    "operation": [
+        "CREDIT",
+        "DEBIT"
+    ],
+    "type": [
+        "SALARY",
+        "PAYMENT",
+        "TRANSFER"
+    ],
+    "status": [
+        "OPEN",
+        "CLOSED"
+    ]
+}
+```
+
+Reponse:
+
+```json
+{
+    "id": "uuid",
+}
+```
+
 
 ### List Transactions
 
-TODO
+Request:
+* GET `/transactions`
+* GET `/transactions/id`
+* GET `/transactions/expense_id`
+* GET `/transactions/source_id`
+* GET `/transactions/destination_id`
+* GET `/transactions?operation=operation,type=type,status=status,month=month,year=year`
+
+Response:
+
+```json
+[{
+    "id": "uuid",
+    "source_id": "accounts:id",
+    "destination_id": "accounts:id",
+    "expense_id": "expenses:id",
+    "description": "string",
+    "date": "dd/mm/yyyy",
+    "month": "number",
+    "year": "number",
+    "value": {
+        "currency": ["BRL", "USD", "EUR", "..."],
+        "value": "double"
+    },
+    "operation": [
+        "CREDIT",
+        "DEBIT"
+    ],
+    "type": [
+        "SALARY",
+        "PAYMENT",
+        "TRANSFER"
+    ],
+    "status": [
+        "OPEN",
+        "CLOSED"
+    ]
+}]
+```
 
 ### Add Update Expenses
 
-TODO
+Request:
+
+* POST `/expenses`
+* POST `/expenses/id`
+
+```json
+{
+    "description": "string",
+    "date_added": "dd/mm/yyyy",
+    "value": {
+        "due_date": "dd/mm/yyyy",
+        "added_date": "dd/mm/yyyy",
+        "value": {
+            "currency": ["BRL", "USD", "EUR", "..."],
+            "value": "double",
+        }        
+    },
+    "payment": {
+        "due_date": "dd/mm/yyyy",
+        "payment_date": "dd/mm/yyyy",
+        "receive_date": "dd/mm/yyyy",
+        "status": [
+            "PAID",
+            "UNPAID",
+            "PLANNED",
+            "CANCELLED"
+        ]
+    },
+    "type": [
+        "FIXED",
+        "VARIABLE",
+        "ONE_TIME",
+        "LEND"
+    ],
+    "status": [
+        "OPEN",
+        "CLOSED"
+    ]
+}
+```
+
+Response:
+
+```json
+{
+    "id": "uuid",
+}
+```
 
 ### List Expenses
 
-TODO
+Request:
+* GET `/expenses`
+* GET `/expenses/id`
+* GET `/expenses?type=type,status=status`
+
+Response:
+
+```json
+[{
+    "id": "uuid",
+    "description": "string",
+    "date_added": "dd/mm/yyyy",
+    "value_history": [{
+        "due_date": "dd/mm/yyyy",
+        "added_date": "dd/mm/yyyy",
+        "value": {
+            "currency": ["BRL", "USD", "EUR", "..."],
+            "value": "double",
+        }        
+    }],
+    "payments": [{
+        "due_date": "dd/mm/yyyy",
+        "payment_date": "dd/mm/yyyy",
+        "receive_date": "dd/mm/yyyy",
+        "status": [
+            "PAID",
+            "UNPAID",
+            "PLANNED",
+            "CANCELLED"
+        ]
+    }],
+    "type": [
+        "FIXED",
+        "VARIABLE",
+        "ONE_TIME",
+        "LEND"
+    ],
+    "status": [
+        "OPEN",
+        "CLOSED"
+    ],
+    "created_at": "dd/mm/yyyy",
+    "updated_at": "dd/mm/yyyy"
+}]
+```
+
+## Assumptions
+
+* All endpoints must be idempotent, meaning that if the same transaction is performed more than one time, the subsequent request will not affect the values
+* All endpoints must have a response time below 2 seconds
+* All endpoints must have a 99.99% availability
