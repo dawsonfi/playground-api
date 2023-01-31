@@ -1,0 +1,8 @@
+ 7 lines (7 sloc) 96 Bytes
+{
+  semi: false,
+  trailingComma: 'all',
+  singleQuote: true,
+  printWidth: 160,
+  tabWidth: 4
+}

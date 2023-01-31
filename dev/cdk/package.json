@@ -1,0 +1,22 @@
+{
+    "name": "playground-api-cdk",
+    "description": "Playground Api CDK",
+    "repository": "https://github.com/dawsonfi/playground-api",
+    "license": "MIT",
+    "version": "0.1.0",
+    "scripts": {
+        "clean": "rm -rf *.js && rm -rf *.d.ts && rm -rf node_modules && rm -rf cdk.out",
+        "build": "tsc",
+        "watch": "tsc -w",
+        "cdk": "cdk"
+    },
+    "devDependencies": {
+        "@types/node": "^18.11.18",
+        "typescript": "^4.9.4"
+    },
+    "dependencies": {
+        "aws-cdk": "^2.62.2",
+        "aws-cdk-lib": "^2.62.2",
+        "constructs": "^10.1.235"
+    }
+}
