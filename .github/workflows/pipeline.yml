@@ -81,7 +81,7 @@ jobs:
     - uses: actions/setup-node@v2
     - uses: actions/download-artifact@v3
       with:
-        name: bootstrap.zip
+        name: bootstrap
         path: target/lambda/playground-api/bootstrap.zip
     - run: npm install cdk --global
     - run: npm --prefix dev/cdk install
