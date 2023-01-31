@@ -7,8 +7,8 @@ import { FunctionUrlAuthType } from 'aws-cdk-lib/aws-lambda'
 
 export interface LambdaConstructProps {
   readonly functionName: string
-  readonly brazilPackagePath?: string
-  readonly deploymentConfig?: ILambdaDeploymentConfig  
+  readonly brazilPackagePath: string
+  readonly deploymentConfig?: ILambdaDeploymentConfig
   readonly timeout?: Duration
   readonly memorySize?: number
   readonly environment?: { [key: string]: string }
@@ -20,7 +20,7 @@ export class LambdaConstruct extends Function {
   constructor(scope: Construct, id: string, props: LambdaConstructProps) {
     super(scope, id, {
       ...props,
-      code: new AssetCode(props.brazilPackagePath?? 'target/lambda/release/bootstrap.zip'),
+      code: new AssetCode(props.brazilPackagePath),
       description: `Generated on: ${new Date().toISOString()}`,
       runtime: Runtime.PROVIDED_AL2,
       handler: 'doesnt.matter'
@@ -28,7 +28,7 @@ export class LambdaConstruct extends Function {
     this.id = id;
 
     this.createDeploymentGroup(
-      props.functionName, 
+      props.functionName,
       props.deploymentConfig ?? LambdaDeploymentConfig.ALL_AT_ONCE,
       this.currentVersion
     )

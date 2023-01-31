@@ -2,7 +2,7 @@ integ-dev:
 	cargo test --verbose -F integration
 
 release:
-	cargo lambda build --release --x86-64 --output-format zip
+	cargo lambda build --release --x86-64
 
 cdk-install:
 	npm --prefix dev/cdk install

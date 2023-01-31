@@ -33,11 +33,11 @@ jobs:
       with:
         crate: cargo-lambda
     - name: Build Release
-      run: cargo lambda build --release --x86-64 --output-format zip
+      run: cargo lambda build --release --x86-64
     - uses: actions/upload-artifact@v3
       with:
         name: bootstrap
-        path: target/lambda/playground-api/bootstrap.zip
+        path: target/lambda/playground-api/bootstrap
   beta-deploy:
     environment: aws
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: bootstrap
-        path: target/lambda/playground-api/bootstrap.zip
+        path: target/lambda/playground-api/bootstrap
     - run: npm install cdk --global
     - run: npm --prefix dev/cdk install
     - run: npm --prefix dev/cdk run build
@@ -82,7 +82,7 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: bootstrap
-        path: target/lambda/playground-api/bootstrap.zip
+        path: target/lambda/playground-api/bootstrap
     - run: npm install cdk --global
     - run: npm --prefix dev/cdk install
     - run: npm --prefix dev/cdk run build
