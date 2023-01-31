@@ -48,6 +48,7 @@ jobs:
         name: bootstrap.zip
         path: target/lambda/playground-api/bootstrap.zip
     - run: npm install cdk --global
+    - run: npm --prefix dev/cdk install
     - run: npm --prefix dev/cdk run build
     - name: Deploy stack
       run: cdk deploy beta-playground-api-stack --app "node dev/cdk/dist/index" --require-approval never
@@ -79,6 +80,7 @@ jobs:
         name: bootstrap.zip
         path: target/lambda/playground-api/bootstrap.zip
     - run: npm install cdk --global
+    - run: npm --prefix dev/cdk install
     - run: npm --prefix dev/cdk run build
     - name: Deploy stack
       run: cdk deploy prod-playground-api-stack --app "node dev/cdk/dist/index" --require-approval never
