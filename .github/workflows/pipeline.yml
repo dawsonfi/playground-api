@@ -37,7 +37,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: bootstrap
-        path: target/lambda/playground-api/
+        path: target/lambda/playground-api/bootstrap
   beta-deploy:
     environment: aws
     runs-on: ubuntu-latest
