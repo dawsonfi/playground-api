@@ -13,7 +13,7 @@ export class PlaygroundApiStack extends Stack {
         const lambda_name = `${props.prefix}-playground-lambda-api`
         new LambdaConstruct(this, lambda_name, {
             functionName: lambda_name,
-            brazilPackagePath: 'target/lambda/playground-api/bootstrap.zip',            
+            brazilPackagePath: 'target/lambda/playground-api/bootstrap.zip',
         }).withFunctionUrl()
     }
 }
