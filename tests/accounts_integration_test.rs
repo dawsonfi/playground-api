@@ -10,7 +10,7 @@ mod tests {
         let app = test::init_service(App::new().service(list_accounts)).await;
         let req = test::TestRequest::default()
             .uri("/accounts")
-            .insert_header(ContentType::plaintext())
+            .insert_header(ContentType::json())
             .to_request();
         let resp: Value = test::call_and_read_body_json(&app, req).await;
 
