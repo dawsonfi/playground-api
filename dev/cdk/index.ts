@@ -6,11 +6,12 @@ const app = new App();
 
 ENVIRONMENTS.forEach(environment => {
     new PlaygroundApiStack(app, `${environment.name}-playground-api-stack`, {
-        env: { 
+        env: {
             region: environment.region,
             account: environment.account
         },
-        prefix: environment.name
+        prefix: environment.name,
+        isDev: environment.isDev
     });
 })
 
