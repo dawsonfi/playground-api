@@ -1,4 +1,4 @@
-// #[cfg(feature = "integration")]
+#[cfg(feature = "integration")]
 #[cfg(test)]
 mod tests {
     use actix_web::{test, App};
