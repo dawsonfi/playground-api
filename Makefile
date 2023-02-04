@@ -1,5 +1,8 @@
-integ-dev:
-	cargo test --verbose -F integration
+integ-dev-aws:
+	RUNNING_ENV=${USER} cargo test --verbose -F integration
+
+integ-beta-aws:
+	RUNNING_ENV=beta cargo test --verbose -F integration
 
 release:
 	cargo lambda build --release --x86-64
