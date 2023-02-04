@@ -1,9 +1,12 @@
 mod playground_api_lambda_agent;
 
+#[cfg(feature = "integration")]
 use playground_api_lambda_agent::PlaygroundApiLamdaAgent;
+#[cfg(feature = "integration")]
+use std::env;
 use std::error::Error;
 use async_trait::async_trait;
-use std::env;
+
 
 #[derive(Default)]
 pub struct PlaygroundApiRequest {
@@ -23,6 +26,7 @@ pub trait PlaygroundApiAgent {
     async fn call(&self, request: PlaygroundApiRequest) -> Result<PlaygroundApiResponse, Box<dyn Error>>;
 }
 
+#[cfg(feature = "integration")]
 pub async fn build_playground_api_agent() -> Result<Box<dyn PlaygroundApiAgent>, Box<dyn Error>> {
     Ok(match env::var("RUNNING_ENV") {
         Ok(running_env) => Box::new(PlaygroundApiLamdaAgent::new(running_env).await),

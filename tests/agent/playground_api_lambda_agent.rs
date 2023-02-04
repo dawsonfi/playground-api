@@ -12,6 +12,7 @@ pub struct PlaygroundApiLamdaAgent {
 }
 
 impl PlaygroundApiLamdaAgent {
+    #[cfg(feature = "integration")]
     pub async fn new(running_env: String) -> Self {
         let config = aws_config::load_from_env().await;
         let client = Client::new(&config);
