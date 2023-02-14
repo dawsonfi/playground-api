@@ -14,15 +14,52 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build
       run: cargo build --verbose
-  test:
+  clippy:
     runs-on: ubuntu-latest
     needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Lint
+      - run: rustup component add clippy
+      - run: cargo clippy -- -D warnings
+  fmt:
+    runs-on: ubuntu-latest
+    needs: clippy
+    steps:
+      - uses: actions/checkout@v3
+      - name: Format
+      - run: cargo fmt -- --check
+  audit:
+    runs-on: ubuntu-latest
+    needs: fmt
+    steps:
+      - uses: actions/checkout@v3
+      - name: Security Audit
+      - name: Install Cargo Audit
+        uses: baptiste0928/cargo-install@v1
+        with:
+          crate: cargo-audit
+      - run: cargo audit -d /tmp/tmp-advisory-db --ignore RUSTSEC-2020-0071
+  test:
+    runs-on: ubuntu-latest
+    needs: audit
     steps:
     - uses: actions/checkout@v3
     - name: Test
       run: cargo test --verbose
-  package:
+  tarpaulin:
+    runs-on: ubuntu-latest
     needs: test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Security Audit
+      - name: Install Cargo Tarpaulin
+        uses: baptiste0928/cargo-install@v1
+        with:
+          crate: cargo-tarpaulin
+      - run: cargo tarpaulin
+  package:
+    needs: tarpaulin
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
