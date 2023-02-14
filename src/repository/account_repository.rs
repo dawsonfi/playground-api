@@ -47,7 +47,7 @@ impl AccountRepository {
         for (input, parameter, value) in query_attributes {
             if input.is_some() {
                 conditions.push((
-                    format!("#{} = :{}", parameter, value),
+                    format!("#{parameter} = :{value}"),
                     value.to_string(),
                     AttributeValue::S(input.unwrap()),
                 ))
