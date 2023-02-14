@@ -20,7 +20,7 @@ pub struct DynamoDbClient {
 impl DynamoDbClient {
     pub fn new(config: &SdkConfig) -> Self {
         DynamoDbClient {
-            client: Client::new(&config),
+            client: Client::new(config),
         }
     }
 }
@@ -36,7 +36,7 @@ impl DatabaseClient for DynamoDbClient {
 
         for (expression, attribute_name, attribute_value) in conditions {
             let expression_parameters = expression
-                .split("=")
+                .split('=')
                 .map(|parameter| parameter.trim())
                 .collect::<Vec<&str>>();
 

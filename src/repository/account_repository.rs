@@ -20,7 +20,7 @@ pub struct AccountRepository {
 impl AccountRepository {
     pub fn new(config: &SdkConfig) -> Self {
         AccountRepository {
-            client: Box::new(DynamoDbClient::new(&config)),
+            client: Box::new(DynamoDbClient::new(config)),
         }
     }
 
@@ -79,4 +79,11 @@ impl From<HashMap<String, AttributeValue>> for Account {
             status: AccountStatus::Open,
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn should_convert_from_hash_map_to_account() {}
 }
