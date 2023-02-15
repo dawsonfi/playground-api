@@ -4,7 +4,10 @@ integ-dev-aws:
 integ-beta-aws:
 	RUNNING_ENV=beta cargo test --verbose -F integration
 
-release:
+checks:
+	cargo clippy -- -D warnings && cargo fmt -- --check && cargo audit -d /tmp/tmp-advisory-db --ignore RUSTSEC-2020-0071
+
+release: checks
 	cargo lambda build --release --x86-64
 
 cdk-install:

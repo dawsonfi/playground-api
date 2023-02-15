@@ -1,7 +1,7 @@
 use crate::model::Currency;
 use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter, Result};
-use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
 pub enum AccountType {
