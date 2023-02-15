@@ -69,7 +69,7 @@ mod tests {
     #[test_case(AccountType::Salary, "SALARY".to_string(); "Should Return String for Salary")]
     #[test_case(AccountType::Savings, "SAVINGS".to_string(); "Should Return String for Savings")]
     #[test_case(AccountType::Checking, "CHECKING".to_string(); "Should Return String for Checking")]
-    #[test_case(AccountType::Investiment, "INVESTMENT".to_string(); "Should Return String for Investiment")]
+    #[test_case(AccountType::Investment, "INVESTMENT".to_string(); "Should Return String for Investment")]
     #[test_case(AccountType::Stock, "STOCK".to_string(); "Should Return String for Stock")]
     #[test_case(AccountType::ExternalParty, "EXTERNAL_PARTY".to_string(); "Should Return String for ExternalParty")]
     fn should_return_string_representation_of_account_type(
