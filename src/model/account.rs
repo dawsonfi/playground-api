@@ -8,7 +8,7 @@ pub enum AccountType {
     Salary,
     Savings,
     Checking,
-    Investiment,
+    Investment,
     Stock,
     ExternalParty,
 }
@@ -32,7 +32,7 @@ impl Display for AccountType {
             AccountType::Salary => write!(formatter, "SALARY"),
             AccountType::Savings => write!(formatter, "SAVINGS"),
             AccountType::Checking => write!(formatter, "CHECKING"),
-            AccountType::Investiment => write!(formatter, "INVESTMENT"),
+            AccountType::Investment => write!(formatter, "INVESTMENT"),
             AccountType::Stock => write!(formatter, "STOCK"),
             AccountType::ExternalParty => write!(formatter, "EXTERNAL_PARTY"),
         }
