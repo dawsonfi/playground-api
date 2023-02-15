@@ -1,7 +1,9 @@
 use crate::model::Currency;
 use chrono::NaiveDateTime;
 use std::fmt::{Display, Formatter, Result};
+use serde::{Serialize, Deserialize};
 
+#[derive(Serialize, Deserialize)]
 pub enum AccountType {
     Salary,
     Savings,
@@ -11,26 +13,17 @@ pub enum AccountType {
     ExternalParty,
 }
 
+#[derive(Serialize, Deserialize)]
 pub enum AccountStatus {
     Open,
     Closed,
     NotInUse,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct AccountBalance {
     pub date: NaiveDateTime,
     pub balance: Currency,
-}
-
-pub struct Account {
-    pub id: String,
-    pub name: String,
-    pub bank_name: String,
-    pub open_date: NaiveDateTime,
-    pub close_date: NaiveDateTime,
-    pub account_type: AccountType,
-    pub balances: Vec<AccountBalance>,
-    pub status: AccountStatus,
 }
 
 impl Display for AccountType {
@@ -44,6 +37,18 @@ impl Display for AccountType {
             AccountType::ExternalParty => write!(formatter, "EXTERNAL_PARTY"),
         }
     }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Account {
+    pub id: String,
+    pub name: String,
+    pub bank_name: String,
+    pub open_date: NaiveDateTime,
+    pub close_date: NaiveDateTime,
+    pub account_type: AccountType,
+    pub balances: Vec<AccountBalance>,
+    pub status: AccountStatus,
 }
 
 impl Display for AccountStatus {

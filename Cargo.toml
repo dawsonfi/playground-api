@@ -7,6 +7,7 @@ edition = "2021"
 actix-web = "4"
 lambda-web = { version = "0.2.0", features=["actix4"] }
 tokio = { version = "1.25.0", features = ["full"] }
+serde = "1.0"
 serde_json = "1.0"
 aws-config = "0.54.1"
 aws-smithy-types= "0.54.1"
@@ -14,7 +15,7 @@ aws-sdk-lambda = "0.24.0"
 aws-sdk-dynamodb = "0.24.0"
 base64 = "0.21.0"
 async-trait = "0.1.64"
-chrono = "0.4.23"
+chrono = { version = "0.4.23", features = ["serde"] }
 
 [dev-dependencies]
 test-case = "2.2.2"
