@@ -51,7 +51,7 @@ Schema:
         "EXTERNAL_PARTY"
     ],
     "balances": [{
-        "date": "dd/mm/yyyy",
+        "date": "dd/mm/yyyy HH:mm:ssZ",
         "balance": {
             "currency": ["BRL", "USD", "EUR", "..."],
             "value": "double"
