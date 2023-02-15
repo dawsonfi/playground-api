@@ -45,7 +45,7 @@ pub struct Account {
     pub name: String,
     pub bank_name: String,
     pub open_date: NaiveDateTime,
-    pub close_date: NaiveDateTime,
+    pub close_date: Option<NaiveDateTime>,
     pub account_type: AccountType,
     pub balances: Vec<AccountBalance>,
     pub status: AccountStatus,
