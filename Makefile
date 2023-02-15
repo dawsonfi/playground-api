@@ -18,3 +18,6 @@ bootstrap: release cdk-build
 
 deploy-devo: release cdk-build
 	cdk deploy $(USER)-playground-api-stack --profile playground --app "node dev/cdk/dist/index" --require-approval never
+
+deploy-beta: release cdk-build
+	cdk deploy beta-playground-api-stack --profile playground --app "node dev/cdk/dist/index" --require-approval never
