@@ -1,5 +1,7 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaConstruct } from '../constructs/lambda_construct';
+import { DynamoDBConstruct } from '../constructs/dymamo_db_construct';
+import { AttributeType } from 'aws-cdk-lib/aws-dynamodb';
 import { LambdaDeploymentConfig } from 'aws-cdk-lib/aws-codedeploy'
 
 export interface PlaygroundApiStackProps extends StackProps {
@@ -12,10 +14,30 @@ export class PlaygroundApiStack extends Stack {
         super(parent, name, props);
 
         const lambda_name = `${props.prefix}-playground-lambda-api`
-        new LambdaConstruct(this, lambda_name, {
+        const playground_api_lambda = new LambdaConstruct(this, lambda_name, {
             functionName: lambda_name,
             brazilPackagePath: 'target/lambda/playground-api',
             deploymentConfig: props.isDev? LambdaDeploymentConfig.ALL_AT_ONCE : LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES
         }).withFunctionUrl()
+
+        const tables = [
+            {
+                tableName: 'Account',
+                partitionKey: {
+                    name: 'id',
+                    type: AttributeType.STRING
+                }
+            }
+        ];
+
+        tables.forEach(table => {
+            const created_table = new DynamoDBConstruct(this, `${table.tableName}Table`, {
+                tableName: table.tableName,
+                partitionKey: table.partitionKey,
+                shouldReuse: props.isDev
+            });
+
+            created_table.table.grantWriteData(playground_api_lambda);
+        });
     }
 }
