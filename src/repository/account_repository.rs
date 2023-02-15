@@ -56,7 +56,7 @@ impl AccountRepository {
 
         let result = self
             .client
-            .query(TABLE_NAME.to_string(), conditions)
+            .scan(TABLE_NAME.to_string(), conditions)
             .await?
             .into_iter()
             .map(Account::from)
