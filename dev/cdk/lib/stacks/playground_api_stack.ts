@@ -37,7 +37,7 @@ export class PlaygroundApiStack extends Stack {
                 shouldReuse: props.isDev
             });
 
-            created_table.table.grantWriteData(playground_api_lambda);
+            created_table.table.grantReadWriteData(playground_api_lambda);
         });
     }
 }
