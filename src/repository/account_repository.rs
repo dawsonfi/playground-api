@@ -67,13 +67,13 @@ impl AccountRepository {
 }
 
 impl From<HashMap<String, AttributeValue>> for Account {
-    fn from(_value: HashMap<String, AttributeValue>) -> Self {
+    fn from(values: HashMap<String, AttributeValue>) -> Self {
         Account {
-            id: "".to_string(),
-            name: "".to_string(),
-            bank_name: "".to_string(),
+            id: DynamoDbClient::extract_string("id", &values).unwrap(),
+            name: DynamoDbClient::extract_string("name", &values).unwrap(),
+            bank_name: DynamoDbClient::extract_string("bank_name", &values).unwrap(),
             open_date: Utc::now().naive_utc(),
-            close_date: Utc::now().naive_utc(),
+            close_date: None,
             account_type: AccountType::Checking,
             balances: vec![],
             status: AccountStatus::Open,

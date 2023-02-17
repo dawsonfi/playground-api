@@ -53,3 +53,21 @@ impl DatabaseClient for DynamoDbClient {
         Ok(result)
     }
 }
+
+impl DynamoDbClient {
+    pub fn extract_string(key: &str, values: &HashMap<String, AttributeValue>) -> Option<String> {
+        Some(values.get(key)?.as_s().unwrap().clone())
+    }
+
+    pub fn extract_number(key: &str, values: &HashMap<String, AttributeValue>) -> Option<f32> {
+        Some(values.get(key)?.as_n().unwrap().parse::<f32>().unwrap())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn should_extract_string_when_available() {}
+}
