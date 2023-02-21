@@ -3,8 +3,8 @@ use env_logger::{init_from_env, Env};
 use lambda_web::actix_web::{self, App, HttpServer};
 use lambda_web::{is_running_on_lambda, run_actix_on_lambda, LambdaError};
 use playground_api::controller::account_controller::list_accounts;
-use playground_api::repository::account_repository::AccountRepository;
 use playground_api::repository::ConfigProvider;
+use playground_api::service::account_service::AccountService;
 
 #[actix_web::main]
 async fn main() -> Result<(), LambdaError> {
@@ -14,7 +14,7 @@ async fn main() -> Result<(), LambdaError> {
     let factory = move || {
         App::new()
             .service(list_accounts)
-            .app_data(Data::new(AccountRepository::new(&config_provider)))
+            .app_data(Data::new(AccountService::new(&config_provider)))
     };
 
     if is_running_on_lambda() {
