@@ -2,10 +2,13 @@ use async_trait::async_trait;
 use aws_config::SdkConfig;
 use aws_sdk_dynamodb::model::ConditionalOperator;
 use aws_sdk_dynamodb::{model::AttributeValue, Client};
+#[cfg(test)]
+use mockall::automock;
 use std::collections::HashMap;
 use std::error::Error;
 
 #[async_trait]
+#[cfg_attr(test, automock)]
 pub trait DatabaseClient {
     async fn scan(
         &self,

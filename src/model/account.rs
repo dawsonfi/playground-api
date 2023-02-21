@@ -64,27 +64,29 @@ impl Display for AccountStatus {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test_case::test_case;
+    use rstest::rstest;
 
-    #[test_case(AccountType::Salary, "SALARY".to_string(); "Should Return String for Salary")]
-    #[test_case(AccountType::Savings, "SAVINGS".to_string(); "Should Return String for Savings")]
-    #[test_case(AccountType::Checking, "CHECKING".to_string(); "Should Return String for Checking")]
-    #[test_case(AccountType::Investment, "INVESTMENT".to_string(); "Should Return String for Investment")]
-    #[test_case(AccountType::Stock, "STOCK".to_string(); "Should Return String for Stock")]
-    #[test_case(AccountType::ExternalParty, "EXTERNAL_PARTY".to_string(); "Should Return String for ExternalParty")]
+    #[rstest]
+    #[case(AccountType::Salary, "SALARY".to_string())]
+    #[case(AccountType::Savings, "SAVINGS".to_string())]
+    #[case(AccountType::Checking, "CHECKING".to_string())]
+    #[case(AccountType::Investment, "INVESTMENT".to_string())]
+    #[case(AccountType::Stock, "STOCK".to_string())]
+    #[case(AccountType::ExternalParty, "EXTERNAL_PARTY".to_string())]
     fn should_return_string_representation_of_account_type(
-        account_type: AccountType,
-        expected_string: String,
+        #[case] account_type: AccountType,
+        #[case] expected_string: String,
     ) {
         assert_eq!(expected_string, account_type.to_string())
     }
 
-    #[test_case(AccountStatus::Open, "OPEN".to_string(); "Should Return String for Open")]
-    #[test_case(AccountStatus::Closed, "CLOSED".to_string(); "Should Return String for Closed")]
-    #[test_case(AccountStatus::NotInUse, "NOT_IN_USE".to_string(); "Should Return String for NotInUse")]
+    #[rstest]
+    #[case(AccountStatus::Open, "OPEN".to_string())]
+    #[case(AccountStatus::Closed, "CLOSED".to_string())]
+    #[case(AccountStatus::NotInUse, "NOT_IN_USE".to_string())]
     fn should_return_string_representation_of_account_status(
-        account_status: AccountStatus,
-        expected_string: String,
+        #[case] account_status: AccountStatus,
+        #[case] expected_string: String,
     ) {
         assert_eq!(expected_string, account_status.to_string())
     }
