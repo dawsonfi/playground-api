@@ -52,8 +52,6 @@ impl AccountRepository {
             }
         }
 
-        let result = self.client.list(TABLE_NAME.to_string(), conditions).await?;
-
-        Ok(result)
+        self.client.list(TABLE_NAME.to_string(), conditions).await
     }
 }
