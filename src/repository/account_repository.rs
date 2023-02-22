@@ -1,11 +1,13 @@
-use crate::model::account::{Account, AccountStatus, AccountType};
+use crate::model::account::{Account, AccountBalance, AccountStatus, AccountType};
+use crate::model::{Currency, CurrencyCode};
 use crate::repository::dynamo_client::{DatabaseClient, DynamoDbClient};
 use aws_config::SdkConfig;
 use aws_sdk_dynamodb::model::AttributeValue;
-use chrono::Utc;
+use chrono::NaiveDateTime;
 use std::collections::HashMap;
 use std::convert::From;
 use std::error::Error;
+use std::str::FromStr;
 
 static TABLE_NAME: &str = "Account";
 static ACCOUNT_TYPE_PARAMETER: &str = "account_type";
@@ -72,18 +74,80 @@ impl From<HashMap<String, AttributeValue>> for Account {
             id: DynamoDbClient::extract_string("id", &values).unwrap(),
             name: DynamoDbClient::extract_string("name", &values).unwrap(),
             bank_name: DynamoDbClient::extract_string("bank_name", &values).unwrap(),
-            open_date: Utc::now().naive_utc(),
-            close_date: None,
-            account_type: AccountType::Checking,
-            balances: vec![],
-            status: AccountStatus::Open,
+            open_date: DynamoDbClient::extract_string("open_date", &values)
+                .map(convert_date)
+                .unwrap(),
+            close_date: DynamoDbClient::extract_string("close_date", &values).map(convert_date),
+            account_type: AccountType::from_str(
+                DynamoDbClient::extract_string("type", &values)
+                    .unwrap()
+                    .as_str(),
+            )
+            .unwrap(),
+            balances: DynamoDbClient::extract_list("balances", &values)
+                .unwrap()
+                .into_iter()
+                .map(|attribute| attribute.as_m().unwrap().clone())
+                .map(AccountBalance::from)
+                .collect(),
+            status: AccountStatus::from_str(
+                DynamoDbClient::extract_string("status", &values)
+                    .unwrap()
+                    .as_str(),
+            )
+            .unwrap(),
         }
     }
+}
+
+impl From<HashMap<String, AttributeValue>> for AccountBalance {
+    fn from(values: HashMap<String, AttributeValue>) -> Self {
+        AccountBalance {
+            date: DynamoDbClient::extract_string("date", &values)
+                .map(convert_date)
+                .unwrap(),
+            balance: Currency::from(DynamoDbClient::extract_map("balance", &values).unwrap()),
+        }
+    }
+}
+
+impl From<HashMap<String, AttributeValue>> for Currency {
+    fn from(values: HashMap<String, AttributeValue>) -> Self {
+        Currency {
+            code: CurrencyCode::from_str(
+                DynamoDbClient::extract_string("currency", &values)
+                    .unwrap()
+                    .as_str(),
+            )
+            .unwrap(),
+            value: DynamoDbClient::extract_number("value", &values).unwrap(),
+        }
+    }
+}
+
+fn convert_date(value: String) -> NaiveDateTime {
+    NaiveDateTime::parse_from_str(value.as_str(), "%d/%m/%Y %H:%M:%S%z").unwrap()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn should_convert_from_hash_map_to_account() {}
+    #[test]
+    fn should_convert_valid_date() {
+        let expected_date =
+            NaiveDateTime::parse_from_str("15/02/2023 13:51:12+03:00", "%d/%m/%Y %H:%M:%S%z")
+                .unwrap();
+
+        assert_eq!(
+            expected_date,
+            convert_date("15/02/2023 13:51:12+03:00".to_string())
+        )
+    }
+
+    #[test]
+    #[should_panic]
+    fn should_panic_when_converting_invalid_date() {
+        convert_date("15/02/2023 13:51".to_string());
+    }
 }
