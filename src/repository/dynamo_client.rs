@@ -62,8 +62,8 @@ impl DynamoDbClient {
         Some(values.get(key)?.as_s().unwrap().clone())
     }
 
-    pub fn extract_number(key: &str, values: &HashMap<String, AttributeValue>) -> Option<f32> {
-        Some(values.get(key)?.as_n().unwrap().parse::<f32>().unwrap())
+    pub fn extract_number(key: &str, values: &HashMap<String, AttributeValue>) -> Option<f64> {
+        Some(values.get(key)?.as_n().unwrap().parse::<f64>().unwrap())
     }
 
     pub fn extract_list(
