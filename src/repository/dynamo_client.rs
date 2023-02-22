@@ -1,21 +1,14 @@
+use crate::model::account::{Account, AccountBalance, AccountStatus, AccountType};
+use crate::model::{Currency, CurrencyCode};
+use crate::repository::DatabaseClient;
 use async_trait::async_trait;
 use aws_config::SdkConfig;
 use aws_sdk_dynamodb::model::ConditionalOperator;
 use aws_sdk_dynamodb::{model::AttributeValue, Client};
-#[cfg(test)]
-use mockall::automock;
+use chrono::NaiveDateTime;
 use std::collections::HashMap;
 use std::error::Error;
-
-#[async_trait]
-#[cfg_attr(test, automock)]
-pub trait DatabaseClient {
-    async fn scan(
-        &self,
-        table_name: String,
-        conditions: Vec<(String, String, AttributeValue)>,
-    ) -> Result<Vec<HashMap<String, AttributeValue>>, Box<dyn Error>>;
-}
+use std::str::FromStr;
 
 pub struct DynamoDbClient {
     client: Client,
@@ -31,11 +24,11 @@ impl DynamoDbClient {
 
 #[async_trait]
 impl DatabaseClient for DynamoDbClient {
-    async fn scan(
+    async fn list(
         &self,
         table_name: String,
         conditions: Vec<(String, String, AttributeValue)>,
-    ) -> Result<Vec<HashMap<String, AttributeValue>>, Box<dyn Error>> {
+    ) -> Result<Vec<Account>, Box<dyn Error>> {
         let mut request = self.client.scan().table_name(table_name);
 
         for (expression, attribute_name, attribute_value) in conditions {
@@ -53,7 +46,10 @@ impl DatabaseClient for DynamoDbClient {
 
         let result = request.send().await?.items.unwrap();
 
-        Ok(result)
+        Ok(result
+            .into_iter()
+            .map(Account::from)
+            .collect::<Vec<Account>>())
     }
 }
 
@@ -83,6 +79,67 @@ impl DynamoDbClient {
     pub fn extract_bool(key: &str, values: &HashMap<String, AttributeValue>) -> Option<bool> {
         Some(*values.get(key)?.as_bool().unwrap())
     }
+}
+
+impl From<HashMap<String, AttributeValue>> for Account {
+    fn from(values: HashMap<String, AttributeValue>) -> Self {
+        Account {
+            id: DynamoDbClient::extract_string("id", &values).unwrap(),
+            name: DynamoDbClient::extract_string("name", &values).unwrap(),
+            bank_name: DynamoDbClient::extract_string("bank_name", &values).unwrap(),
+            open_date: DynamoDbClient::extract_string("open_date", &values)
+                .map(convert_date)
+                .unwrap(),
+            close_date: DynamoDbClient::extract_string("close_date", &values).map(convert_date),
+            account_type: AccountType::from_str(
+                DynamoDbClient::extract_string("type", &values)
+                    .unwrap()
+                    .as_str(),
+            )
+            .unwrap(),
+            balances: DynamoDbClient::extract_list("balances", &values)
+                .unwrap()
+                .into_iter()
+                .map(|attribute| attribute.as_m().unwrap().clone())
+                .map(AccountBalance::from)
+                .collect(),
+            status: AccountStatus::from_str(
+                DynamoDbClient::extract_string("status", &values)
+                    .unwrap()
+                    .as_str(),
+            )
+            .unwrap(),
+        }
+    }
+}
+
+impl From<HashMap<String, AttributeValue>> for AccountBalance {
+    fn from(values: HashMap<String, AttributeValue>) -> Self {
+        AccountBalance {
+            date: DynamoDbClient::extract_string("date", &values)
+                .map(convert_date)
+                .unwrap(),
+            balance: Currency::from(DynamoDbClient::extract_map("balance", &values).unwrap()),
+        }
+    }
+}
+
+impl From<HashMap<String, AttributeValue>> for Currency {
+    fn from(values: HashMap<String, AttributeValue>) -> Self {
+        Currency {
+            code: CurrencyCode::from_str(
+                DynamoDbClient::extract_string("currency", &values)
+                    .unwrap()
+                    .as_str(),
+            )
+            .unwrap(),
+            value: DynamoDbClient::extract_number("value", &values).unwrap(),
+        }
+    }
+}
+
+fn convert_date(value: String) -> NaiveDateTime {
+    NaiveDateTime::parse_from_str(value.as_str(), "%d/%m/%Y %H:%M:%S%z").unwrap()
 }
 
 #[cfg(test)]
@@ -264,5 +321,23 @@ mod tests {
         values.insert(key.to_string(), AttributeValue::N("1".to_string()));
 
         DynamoDbClient::extract_map(key, &values);
+    }
+
+    #[test]
+    fn should_convert_valid_date() {
+        let expected_date =
+            NaiveDateTime::parse_from_str("15/02/2023 13:51:12+03:00", "%d/%m/%Y %H:%M:%S%z")
+                .unwrap();
+
+        assert_eq!(
+            expected_date,
+            convert_date("15/02/2023 13:51:12+03:00".to_string())
+        )
+    }
+
+    #[test]
+    #[should_panic]
+    fn should_panic_when_converting_invalid_date() {
+        convert_date("15/02/2023 13:51".to_string());
     }
 }
