@@ -72,4 +72,21 @@ mod tests {
 
         assert!(currency_code.is_err());
     }
+
+    #[test]
+    fn currency_code_should_be_thread_safe() {
+        is_thread_safe::<CurrencyCode>();
+    }
+
+    #[test]
+    fn currency_should_be_thread_safe() {
+        is_thread_safe::<Currency>();
+    }
+
+    #[test]
+    fn parse_enum_error_should_be_thread_safe() {
+        is_thread_safe::<ParseEnumError>();
+    }
+
+    fn is_thread_safe<T: Sized + Send + Sync + Unpin>() {}
 }

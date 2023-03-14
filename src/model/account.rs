@@ -167,4 +167,26 @@ mod tests {
 
         assert!(account_status.is_err());
     }
+
+    #[test]
+    fn account_type_should_be_thread_safe() {
+        is_thread_safe::<AccountType>()
+    }
+
+    #[test]
+    fn account_status_should_be_thread_safe() {
+        is_thread_safe::<AccountStatus>();
+    }
+
+    #[test]
+    fn account_balance_should_be_thread_safe() {
+        is_thread_safe::<AccountBalance>();
+    }
+
+    #[test]
+    fn account_should_be_thread_safe() {
+        is_thread_safe::<Account>();
+    }
+
+    fn is_thread_safe<T: Sized + Send + Sync + Unpin>() {}
 }
