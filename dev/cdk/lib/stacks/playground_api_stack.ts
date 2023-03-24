@@ -17,7 +17,7 @@ export class PlaygroundApiStack extends Stack {
         const playground_api_lambda = new LambdaConstruct(this, lambda_name, {
             functionName: lambda_name,
             brazilPackagePath: 'target/lambda/playground-api',
-            deploymentConfig: props.isDev? LambdaDeploymentConfig.ALL_AT_ONCE : LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES
+            isDev: props.isDev
         }).withFunctionUrl()
 
         const tables = [

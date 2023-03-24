@@ -1,8 +1,8 @@
 integ-dev-aws:
-	RUNNING_ENV=${USER} cargo test --verbose -F integration
+	AWS_PROFILE=playground RUNNING_ENV=${USER} cargo test --verbose -F integration
 
 integ-beta-aws:
-	RUNNING_ENV=beta cargo test --verbose -F integration
+	AWS_PROFILE=playground RUNNING_ENV=beta cargo test --verbose -F integration
 
 checks:
 	cargo clippy -- -D warnings && cargo fmt -- --check && cargo audit -d /tmp/tmp-advisory-db --ignore RUSTSEC-2020-0071

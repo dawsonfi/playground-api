@@ -8,14 +8,15 @@ import { FunctionUrlAuthType } from 'aws-cdk-lib/aws-lambda'
 export interface LambdaConstructProps {
   readonly functionName: string
   readonly brazilPackagePath: string
-  readonly deploymentConfig?: ILambdaDeploymentConfig
   readonly timeout?: Duration
   readonly memorySize?: number
   readonly environment?: { [key: string]: string }
+  readonly isDev?: boolean
 }
 
 export class LambdaConstruct extends Function {
   private readonly id: string;
+  private readonly isDev: boolean;
 
   constructor(scope: Construct, id: string, props: LambdaConstructProps) {
     super(scope, id, {
@@ -26,17 +27,18 @@ export class LambdaConstruct extends Function {
       handler: 'doesnt.matter'
     })
     this.id = id;
+    this.isDev = props.isDev ?? false;
 
     this.createDeploymentGroup(
       props.functionName,
-      props.deploymentConfig ?? LambdaDeploymentConfig.ALL_AT_ONCE,
+      this.isDev? LambdaDeploymentConfig.ALL_AT_ONCE : LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES,
       this.currentVersion
     )
   }
 
   public withFunctionUrl(): LambdaConstruct {
     const functionUrl = this.addFunctionUrl({
-      authType: FunctionUrlAuthType.AWS_IAM,
+      authType: this.isDev? FunctionUrlAuthType.NONE : FunctionUrlAuthType.AWS_IAM,
     })
 
     new CfnOutput(this, `${this.id}-url`, {
