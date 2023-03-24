@@ -1,9 +1,9 @@
+use crate::error::PermanentError;
 use crate::model::account::{Account, AccountStatus, AccountType};
 use crate::repository::dynamo_client::DynamoDbClient;
 use crate::repository::DatabaseClient;
 use aws_config::SdkConfig;
 use aws_sdk_dynamodb::model::AttributeValue;
-use std::error::Error;
 
 static TABLE_NAME: &str = "Account";
 static ACCOUNT_TYPE_PARAMETER: &str = "account_type";
@@ -26,7 +26,7 @@ impl AccountRepository {
         &self,
         account_type: Option<AccountType>,
         account_status: Option<AccountStatus>,
-    ) -> Result<Vec<Account>, Box<dyn Error>> {
+    ) -> Result<Vec<Account>, PermanentError> {
         let mut conditions = vec![];
 
         let query_attributes = vec![

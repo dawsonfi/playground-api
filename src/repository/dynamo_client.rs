@@ -1,13 +1,15 @@
+use crate::error::PermanentError;
 use crate::model::account::{Account, AccountBalance, AccountStatus, AccountType};
 use crate::model::{Currency, CurrencyCode};
 use crate::repository::DatabaseClient;
 use async_trait::async_trait;
 use aws_config::SdkConfig;
+use aws_sdk_dynamodb::error::ScanError;
 use aws_sdk_dynamodb::model::ConditionalOperator;
+use aws_sdk_dynamodb::types::SdkError;
 use aws_sdk_dynamodb::{model::AttributeValue, Client};
 use chrono::NaiveDateTime;
 use std::collections::HashMap;
-use std::error::Error;
 use std::str::FromStr;
 
 pub struct DynamoDbClient {
@@ -28,7 +30,7 @@ impl DatabaseClient for DynamoDbClient {
         &self,
         table_name: String,
         conditions: Vec<(String, String, AttributeValue)>,
-    ) -> Result<Vec<Account>, Box<dyn Error>> {
+    ) -> Result<Vec<Account>, PermanentError> {
         let mut request = self.client.scan().table_name(table_name);
 
         for (expression, attribute_name, attribute_value) in conditions {
@@ -44,7 +46,12 @@ impl DatabaseClient for DynamoDbClient {
                 .expression_attribute_values(expression_parameters[1], attribute_value);
         }
 
-        let result = request.send().await?.items.unwrap();
+        let result = request
+            .send()
+            .await
+            .map_err(PermanentError::from)?
+            .items
+            .unwrap();
 
         Ok(result
             .into_iter()
@@ -140,6 +147,16 @@ impl From<HashMap<String, AttributeValue>> for Currency {
 
 fn convert_date(value: String) -> NaiveDateTime {
     NaiveDateTime::parse_from_str(value.as_str(), "%d/%m/%Y %H:%M:%S%z").unwrap()
+}
+
+impl From<SdkError<ScanError>> for PermanentError {
+    fn from(value: SdkError<ScanError>) -> Self {
+        let service_error = value.into_service_error();
+        Self {
+            message: service_error.message().map(String::from),
+            source: Box::new(service_error),
+        }
+    }
 }
 
 #[cfg(test)]
