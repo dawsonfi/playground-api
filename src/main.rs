@@ -1,18 +1,21 @@
 use actix_web::web::Data;
-use env_logger::{init_from_env, Env};
 use lambda_web::actix_web::{self, App, HttpServer};
 use lambda_web::{is_running_on_lambda, run_actix_on_lambda, LambdaError};
 use playground_api::controller::account_controller::list_accounts;
 use playground_api::repository::ConfigProvider;
 use playground_api::service::account_service::AccountService;
+use playground_api::telemetry::{get_subscriber, init_subscriber};
+use tracing_actix_web::TracingLogger;
 
 #[actix_web::main]
 async fn main() -> Result<(), LambdaError> {
-    configure_log();
+    let subscriber = get_subscriber("playground-api".into(), "info".into(), std::io::stdout);
+    init_subscriber(subscriber);
 
     let config_provider = ConfigProvider::default().provide().await;
     let factory = move || {
         App::new()
+            .wrap(TracingLogger::default())
             .service(list_accounts)
             .app_data(Data::new(AccountService::new(&config_provider)))
     };
@@ -28,9 +31,4 @@ async fn main() -> Result<(), LambdaError> {
             .await?;
     }
     Ok(())
-}
-
-fn configure_log() {
-    let env = Env::default().filter_or("MY_LOG_LEVEL", "info");
-    init_from_env(env);
 }

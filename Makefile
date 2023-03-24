@@ -24,3 +24,6 @@ deploy-devo: release cdk-build
 
 deploy-beta: release cdk-build
 	cdk deploy beta-playground-api-stack --profile playground --app "node dev/cdk/dist/index" --require-approval never
+
+run-local:
+	AWS_PROFILE=playground cargo run | bunyan

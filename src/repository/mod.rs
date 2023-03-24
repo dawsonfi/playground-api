@@ -3,7 +3,8 @@ pub mod dynamo_client;
 
 use crate::model::account::Account;
 use async_trait::async_trait;
-use aws_config::{load_from_env, SdkConfig};
+use aws_config::{from_env, SdkConfig};
+use aws_credential_types::cache::CredentialsCache;
 use aws_sdk_dynamodb::model::AttributeValue;
 #[cfg(test)]
 use mockall::automock;
@@ -14,7 +15,10 @@ pub struct ConfigProvider {}
 
 impl ConfigProvider {
     pub async fn provide(&self) -> SdkConfig {
-        load_from_env().await
+        from_env()
+            .credentials_cache(CredentialsCache::lazy())
+            .load()
+            .await
     }
 }
 
