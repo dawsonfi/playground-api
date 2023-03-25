@@ -24,8 +24,6 @@ impl AccountRepository {
         account_type: Option<AccountType>,
         account_status: Option<AccountStatus>,
     ) -> Result<Vec<Account>, PermanentError> {
-        let mut conditions = vec![];
-
         let query_attributes = vec![
             (
                 ACCOUNT_TYPE_PARAMETER.to_string(),
@@ -35,14 +33,14 @@ impl AccountRepository {
                 ACCOUNT_STATUS_PARAMETER.to_string(),
                 account_status.map(|item| item.to_string()),
             ),
-        ];
+        ]
+        .into_iter()
+        .filter(|(_, value)| value.is_some())
+        .map(|(parameter, value)| (parameter, value.unwrap()))
+        .collect();
 
-        for (parameter, value) in query_attributes {
-            if value.is_some() {
-                conditions.push((parameter, value.unwrap()))
-            }
-        }
-
-        self.client.list(TABLE_NAME.to_string(), conditions).await
+        self.client
+            .list(TABLE_NAME.to_string(), query_attributes)
+            .await
     }
 }

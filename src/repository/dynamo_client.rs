@@ -41,10 +41,7 @@ impl DatabaseClient for DynamoDbClient {
                 .filter_expression(format!("{name_parameter} = {value_parameter}"))
                 .conditional_operator(ConditionalOperator::And)
                 .expression_attribute_names(name_parameter, attribute_name)
-                .expression_attribute_values(
-                    value_parameter,
-                    DynamoDbClient::convert_to_attribute_value(attribute_value),
-                );
+                .expression_attribute_values(value_parameter, AttributeValue::S(attribute_value));
         }
 
         let result = request
@@ -86,10 +83,6 @@ impl DynamoDbClient {
 
     pub fn extract_bool(key: &str, values: &HashMap<String, AttributeValue>) -> Option<bool> {
         Some(*values.get(key)?.as_bool().unwrap())
-    }
-
-    pub fn convert_to_attribute_value(value: String) -> AttributeValue {
-        AttributeValue::S(value)
     }
 }
 
