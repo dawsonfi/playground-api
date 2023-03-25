@@ -29,21 +29,22 @@ impl DatabaseClient for DynamoDbClient {
     async fn list(
         &self,
         table_name: String,
-        conditions: Vec<(String, String, AttributeValue)>,
+        conditions: Vec<(String, String)>,
     ) -> Result<Vec<Account>, PermanentError> {
         let mut request = self.client.scan().table_name(table_name);
 
-        for (expression, attribute_name, attribute_value) in conditions {
-            let expression_parameters = expression
-                .split('=')
-                .map(|parameter| parameter.trim())
-                .collect::<Vec<&str>>();
+        for (attribute_name, attribute_value) in conditions {
+            let name_parameter = format!("{attribute_name}name");
+            let value_parameter = format!(":{attribute_name}value");
 
             request = request
-                .filter_expression(expression.clone())
+                .filter_expression(format!("{name_parameter} = {value_parameter}"))
                 .conditional_operator(ConditionalOperator::And)
-                .expression_attribute_names(expression_parameters[0], attribute_name)
-                .expression_attribute_values(expression_parameters[1], attribute_value);
+                .expression_attribute_names(name_parameter, attribute_name)
+                .expression_attribute_values(
+                    value_parameter,
+                    DynamoDbClient::convert_to_attribute_value(attribute_value),
+                );
         }
 
         let result = request
@@ -85,6 +86,10 @@ impl DynamoDbClient {
 
     pub fn extract_bool(key: &str, values: &HashMap<String, AttributeValue>) -> Option<bool> {
         Some(*values.get(key)?.as_bool().unwrap())
+    }
+
+    pub fn convert_to_attribute_value(value: String) -> AttributeValue {
+        AttributeValue::S(value)
     }
 }
 

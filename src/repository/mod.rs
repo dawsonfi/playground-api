@@ -6,7 +6,6 @@ use crate::model::account::Account;
 use async_trait::async_trait;
 use aws_config::{from_env, SdkConfig};
 use aws_credential_types::cache::CredentialsCache;
-use aws_sdk_dynamodb::model::AttributeValue;
 #[cfg(test)]
 use mockall::automock;
 
@@ -28,6 +27,6 @@ pub trait DatabaseClient {
     async fn list(
         &self,
         table_name: String,
-        conditions: Vec<(String, String, AttributeValue)>,
+        conditions: Vec<(String, String)>,
     ) -> Result<Vec<Account>, PermanentError>;
 }

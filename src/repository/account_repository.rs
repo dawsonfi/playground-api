@@ -3,13 +3,10 @@ use crate::model::account::{Account, AccountStatus, AccountType};
 use crate::repository::dynamo_client::DynamoDbClient;
 use crate::repository::DatabaseClient;
 use aws_config::SdkConfig;
-use aws_sdk_dynamodb::model::AttributeValue;
 
 static TABLE_NAME: &str = "Account";
 static ACCOUNT_TYPE_PARAMETER: &str = "account_type";
-static ACCOUNT_TYPE_VALUE: &str = "type";
 static ACCOUNT_STATUS_PARAMETER: &str = "account_status";
-static ACCOUNT_STATUS_VALUE: &str = "status";
 
 pub struct AccountRepository {
     client: Box<dyn DatabaseClient>,
@@ -31,24 +28,18 @@ impl AccountRepository {
 
         let query_attributes = vec![
             (
+                ACCOUNT_TYPE_PARAMETER.to_string(),
                 account_type.map(|item| item.to_string()),
-                ACCOUNT_TYPE_PARAMETER,
-                ACCOUNT_TYPE_VALUE,
             ),
             (
+                ACCOUNT_STATUS_PARAMETER.to_string(),
                 account_status.map(|item| item.to_string()),
-                ACCOUNT_STATUS_PARAMETER,
-                ACCOUNT_STATUS_VALUE,
             ),
         ];
 
-        for (input, parameter, value) in query_attributes {
-            if input.is_some() {
-                conditions.push((
-                    format!("#{parameter} = :{value}"),
-                    value.to_string(),
-                    AttributeValue::S(input.unwrap()),
-                ))
+        for (parameter, value) in query_attributes {
+            if value.is_some() {
+                conditions.push((parameter, value.unwrap()))
             }
         }
 
