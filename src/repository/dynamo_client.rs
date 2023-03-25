@@ -25,6 +25,7 @@ impl DynamoDbClient {
 
 #[async_trait]
 impl DatabaseClient for DynamoDbClient {
+    #[tracing::instrument(skip(self))]
     async fn list(
         &self,
         table_name: String,

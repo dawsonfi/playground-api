@@ -19,6 +19,7 @@ impl AccountRepository {
         }
     }
 
+    #[tracing::instrument(skip(self))]
     pub async fn list_accounts(
         &self,
         account_type: Option<AccountType>,
