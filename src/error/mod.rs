@@ -9,7 +9,19 @@ pub struct PermanentError {
 
 impl Display for PermanentError {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
-        Display::fmt(self.source.as_ref(), formatter)
+        let source_message = format!("{}", self.source.as_ref());
+        let exception_message = self
+            .message
+            .as_ref()
+            .map(|message| format!(": {message}"))
+            .unwrap_or("".to_string());
+
+        write!(
+            formatter,
+            "{}{}",
+            source_message.as_str(),
+            exception_message.as_str()
+        )
     }
 }
 
