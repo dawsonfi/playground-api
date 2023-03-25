@@ -5,7 +5,6 @@ use crate::repository::DatabaseClient;
 use async_trait::async_trait;
 use aws_config::SdkConfig;
 use aws_sdk_dynamodb::error::ScanError;
-use aws_sdk_dynamodb::model::ConditionalOperator;
 use aws_sdk_dynamodb::types::SdkError;
 use aws_sdk_dynamodb::{model::AttributeValue, Client};
 use chrono::NaiveDateTime;
@@ -33,13 +32,20 @@ impl DatabaseClient for DynamoDbClient {
     ) -> Result<Vec<Account>, PermanentError> {
         let mut request = self.client.scan().table_name(table_name);
 
+        let mut filter_expression: Option<String> = None;
         for (attribute_name, attribute_value) in conditions {
-            let name_parameter = format!("{attribute_name}name");
-            let value_parameter = format!(":{attribute_name}value");
+            let name_parameter = format!("#{attribute_name}");
+            let value_parameter = format!(":{attribute_name}");
+
+            filter_expression = Some(match filter_expression {
+                Some(expression) => {
+                    format!("{expression} AND {name_parameter} = {value_parameter}")
+                }
+                None => format!("{name_parameter} = {value_parameter}"),
+            });
 
             request = request
-                .filter_expression(format!("{name_parameter} = {value_parameter}"))
-                .conditional_operator(ConditionalOperator::And)
+                .filter_expression(filter_expression.as_ref().unwrap())
                 .expression_attribute_names(name_parameter, attribute_name)
                 .expression_attribute_values(value_parameter, AttributeValue::S(attribute_value));
         }

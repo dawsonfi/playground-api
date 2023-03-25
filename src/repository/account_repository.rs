@@ -5,8 +5,8 @@ use crate::repository::DatabaseClient;
 use aws_config::SdkConfig;
 
 static TABLE_NAME: &str = "Account";
-static ACCOUNT_TYPE_PARAMETER: &str = "account_type";
-static ACCOUNT_STATUS_PARAMETER: &str = "account_status";
+static ACCOUNT_TYPE_PARAMETER: &str = "type";
+static ACCOUNT_STATUS_PARAMETER: &str = "status";
 
 pub struct AccountRepository {
     client: Box<dyn DatabaseClient>,
