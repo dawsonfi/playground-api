@@ -1,6 +1,6 @@
 use crate::error::PermanentError;
 use crate::model::account::{Account, AccountStatus, AccountType};
-use crate::repository::account_repository::AccountRepository;
+use crate::repository::AccountRepository;
 use aws_config::SdkConfig;
 
 pub struct AccountService {

@@ -1,8 +1,9 @@
-pub mod account_repository;
-pub mod dynamo_client;
+mod account_repository;
+mod dynamo_client;
 
 use crate::error::PermanentError;
 use crate::model::account::Account;
+pub use account_repository::AccountRepository;
 use async_trait::async_trait;
 use aws_config::{from_env, SdkConfig};
 use aws_credential_types::cache::CredentialsCache;

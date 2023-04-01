@@ -1,6 +1,6 @@
 use crate::error::PermanentError;
 use crate::model::account::{AccountStatus, AccountType};
-use crate::service::account_service::AccountService;
+use crate::service::AccountService;
 use actix_web::http::header::ContentType;
 use actix_web::web::{Data, Query};
 use lambda_web::actix_web::{get, HttpResponse};

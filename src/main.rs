@@ -5,7 +5,7 @@ use playground_api::config::api_docs::ApiDoc;
 use playground_api::config::telemetry::{get_subscriber, init_subscriber};
 use playground_api::controller::account_controller::list_accounts;
 use playground_api::repository::ConfigProvider;
-use playground_api::service::account_service::AccountService;
+use playground_api::service::AccountService;
 use tracing_actix_web::TracingLogger;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;

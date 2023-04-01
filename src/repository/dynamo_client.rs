@@ -89,10 +89,6 @@ impl DynamoDbClient {
     ) -> Option<HashMap<String, AttributeValue>> {
         Some(values.get(key)?.as_m().unwrap().clone())
     }
-
-    pub fn extract_bool(key: &str, values: &HashMap<String, AttributeValue>) -> Option<bool> {
-        Some(*values.get(key)?.as_bool().unwrap())
-    }
 }
 
 impl From<HashMap<String, AttributeValue>> for Account {
@@ -243,38 +239,6 @@ mod tests {
         values.insert(key.to_string(), AttributeValue::N("batata".to_string()));
 
         DynamoDbClient::extract_number(key, &values);
-    }
-
-    #[test]
-    fn should_extract_bool_when_available() {
-        let key = "batata";
-        let mut values = HashMap::new();
-        values.insert(key.to_string(), AttributeValue::Bool(true));
-
-        let result = DynamoDbClient::extract_bool(key, &values);
-
-        assert!(result.is_some());
-        assert!(result.unwrap());
-    }
-
-    #[test]
-    fn should_return_none_when_bool_is_not_available() {
-        let key = "batata";
-        let values = HashMap::new();
-
-        let result = DynamoDbClient::extract_bool(key, &values);
-
-        assert!(result.is_none());
-    }
-
-    #[test]
-    #[should_panic]
-    fn should_fail_when_attribute_is_not_bool() {
-        let key = "batata";
-        let mut values = HashMap::new();
-        values.insert(key.to_string(), AttributeValue::N("1".to_string()));
-
-        DynamoDbClient::extract_bool(key, &values);
     }
 
     #[test]
