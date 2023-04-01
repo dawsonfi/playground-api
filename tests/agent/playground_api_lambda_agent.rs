@@ -1,24 +1,25 @@
 use crate::agent::{PlaygroundApiAgent, PlaygroundApiRequest, PlaygroundApiResponse};
 use async_trait::async_trait;
-use aws_sdk_lambda::{model::InvocationType, Client};
+use aws_sdk_lambda::types::InvocationType;
+use aws_sdk_lambda::Client;
 use aws_smithy_types::Blob;
 use base64::{engine::general_purpose, Engine as _};
 use serde_json::{from_str, to_string, Map, Value};
 use std::error::Error;
 
-pub struct PlaygroundApiLamdaAgent {
+pub struct PlaygroundApiLambdaAgent {
     client: Client,
     function_name: String,
 }
 
-impl PlaygroundApiLamdaAgent {
+impl PlaygroundApiLambdaAgent {
     #[cfg(feature = "integration")]
     pub async fn new(running_env: String) -> Self {
         let config = aws_config::load_from_env().await;
         let client = Client::new(&config);
 
-        PlaygroundApiLamdaAgent {
-            client: client,
+        Self {
+            client,
             function_name: format!("{}{}", running_env, "-playground-lambda-api"),
         }
     }
@@ -45,7 +46,7 @@ impl PlaygroundApiLamdaAgent {
 }
 
 #[async_trait]
-impl PlaygroundApiAgent for PlaygroundApiLamdaAgent {
+impl PlaygroundApiAgent for PlaygroundApiLambdaAgent {
     async fn call(
         &self,
         request: PlaygroundApiRequest,
@@ -55,13 +56,12 @@ impl PlaygroundApiAgent for PlaygroundApiLamdaAgent {
             .invoke()
             .function_name(self.function_name.clone())
             .invocation_type(InvocationType::RequestResponse)
-            .payload(PlaygroundApiLamdaAgent::build_request_payload(request))
+            .payload(Self::build_request_payload(request))
             .send()
             .await
             .unwrap();
 
-        let body_decoded =
-            PlaygroundApiLamdaAgent::extract_response_payload(resp.payload().unwrap());
+        let body_decoded = Self::extract_response_payload(resp.payload().unwrap());
         Ok(PlaygroundApiResponse {
             status: resp.status_code(),
             payload: body_decoded,

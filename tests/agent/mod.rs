@@ -2,7 +2,7 @@ mod playground_api_lambda_agent;
 
 use async_trait::async_trait;
 #[cfg(feature = "integration")]
-use playground_api_lambda_agent::PlaygroundApiLamdaAgent;
+use playground_api_lambda_agent::PlaygroundApiLambdaAgent;
 #[cfg(feature = "integration")]
 use std::env;
 use std::error::Error;
@@ -31,7 +31,7 @@ pub trait PlaygroundApiAgent {
 #[cfg(feature = "integration")]
 pub async fn build_playground_api_agent() -> Result<Box<dyn PlaygroundApiAgent>, Box<dyn Error>> {
     Ok(match env::var("RUNNING_ENV") {
-        Ok(running_env) => Box::new(PlaygroundApiLamdaAgent::new(running_env).await),
-        Err(_) => Box::new(PlaygroundApiLamdaAgent::new("beta".to_string()).await), //Defaults to beta
+        Ok(running_env) => Box::new(PlaygroundApiLambdaAgent::new(running_env).await),
+        Err(_) => Box::new(PlaygroundApiLambdaAgent::new("beta".to_string()).await), //Defaults to beta
     })
 }
