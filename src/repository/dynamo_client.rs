@@ -4,9 +4,11 @@ use crate::model::{Currency, CurrencyCode};
 use crate::repository::DatabaseClient;
 use async_trait::async_trait;
 use aws_config::SdkConfig;
-use aws_sdk_dynamodb::error::ScanError;
-use aws_sdk_dynamodb::types::SdkError;
-use aws_sdk_dynamodb::{model::AttributeValue, Client};
+use aws_sdk_dynamodb::error::SdkError;
+use aws_sdk_dynamodb::operation::scan::ScanError;
+use aws_sdk_dynamodb::types::AttributeValue;
+use aws_sdk_dynamodb::Client;
+use aws_smithy_types::error::metadata::ProvideErrorMetadata;
 use chrono::NaiveDateTime;
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -167,6 +169,7 @@ impl From<SdkError<ScanError>> for PermanentError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use aws_sdk_dynamodb::types::AttributeValue;
 
     #[test]
     fn should_extract_string_when_available() {

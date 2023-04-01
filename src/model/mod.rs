@@ -1,21 +1,22 @@
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
+use utoipa::ToSchema;
 
 pub mod account;
 
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, ToSchema)]
 pub enum CurrencyCode {
     BRL,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, ToSchema)]
 pub struct Currency {
     pub code: CurrencyCode,
     pub value: f64,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, ToSchema)]
 pub struct ParseEnumError {
     pub message: String,
 }

@@ -3,8 +3,9 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
+use utoipa::ToSchema;
 
-#[derive(Serialize, Deserialize, PartialEq, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Copy, Clone, ToSchema)]
 pub enum AccountType {
     Salary,
     Savings,
@@ -14,25 +15,28 @@ pub enum AccountType {
     ExternalParty,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Copy, Clone, ToSchema)]
 pub enum AccountStatus {
     Open,
     Closed,
     NotInUse,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct AccountBalance {
+    #[schema(value_type = String, format = DateTime)]
     pub date: NaiveDateTime,
     pub balance: Currency,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct Account {
     pub id: String,
     pub name: String,
     pub bank_name: String,
+    #[schema(value_type = String, format = DateTime)]
     pub open_date: NaiveDateTime,
+    #[schema(value_type = String, format = DateTime)]
     pub close_date: Option<NaiveDateTime>,
     pub account_type: AccountType,
     pub balances: Vec<AccountBalance>,

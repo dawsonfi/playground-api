@@ -1,11 +1,14 @@
 use actix_web::web::Data;
 use lambda_web::actix_web::{self, App, HttpServer};
 use lambda_web::{is_running_on_lambda, run_actix_on_lambda, LambdaError};
+use playground_api::config::api_docs::ApiDoc;
+use playground_api::config::telemetry::{get_subscriber, init_subscriber};
 use playground_api::controller::account_controller::list_accounts;
 use playground_api::repository::ConfigProvider;
 use playground_api::service::account_service::AccountService;
-use playground_api::telemetry::{get_subscriber, init_subscriber};
 use tracing_actix_web::TracingLogger;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
 #[actix_web::main]
 async fn main() -> Result<(), LambdaError> {
@@ -17,6 +20,10 @@ async fn main() -> Result<(), LambdaError> {
         App::new()
             .wrap(TracingLogger::default())
             .service(list_accounts)
+            .service(
+                SwaggerUi::new("/swagger-ui/{_:.*}")
+                    .url("/api-docs/openapi.json", ApiDoc::openapi()),
+            )
             .app_data(Data::new(AccountService::new(&config_provider)))
     };
 
