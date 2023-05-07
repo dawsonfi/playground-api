@@ -22,6 +22,7 @@ where
         .with(formatting_layer)
 }
 
+#[cfg(not(tarpaulin_include))]
 pub fn init_subscriber(subscriber: impl Subscriber + Sync + Send) {
     LogTracer::init().expect("Failed to set logger");
     set_global_default(subscriber).expect("Failed to set subscriber");
