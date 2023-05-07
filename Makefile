@@ -4,13 +4,16 @@ integ-dev-aws:
 integ-beta-aws:
 	AWS_PROFILE=playground RUNNING_ENV=beta cargo test --verbose -F integration
 
+coverage:
+	cargo tarpaulin --fail-under 40
+
 test:
 	cargo nextest run
 
 test-log:
 	cargo nextest run --nocapture
 
-checks: test
+checks: test coverage
 	cargo clippy -- -D warnings && cargo fmt -- --check && cargo audit -d /tmp/tmp-advisory-db --ignore RUSTSEC-2020-0071
 
 release: checks

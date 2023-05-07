@@ -18,3 +18,7 @@ Cargo.lock
 cdk.out/
 node_modules/
 *dist*
+
+# Coverage files
+
+*.profraw
