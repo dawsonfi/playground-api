@@ -5,7 +5,7 @@ integ-beta-aws:
 	AWS_PROFILE=playground RUNNING_ENV=beta cargo test --verbose -F integration
 
 coverage:
-	cargo tarpaulin --skip-clean --fail-under 40
+	cargo tarpaulin --skip-clean --lib --fail-under 40
 
 test:
 	cargo nextest run
