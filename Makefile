@@ -17,16 +17,19 @@ checks: test coverage
 	cargo clippy -- -D warnings && cargo fmt -- --check && cargo audit -d /tmp/tmp-advisory-db --ignore RUSTSEC-2020-0071
 
 release: checks
-	cargo lambda build --release --x86-64
+	cargo lambda build --release --arm64
 
 cdk-install:
 	npm --prefix dev/cdk install
+
+cdk-audit-fix:
+	npm --prefix dev/cdk audit fix
 
 cdk-build: cdk-install
 	npm --prefix dev/cdk run build
 
 bootstrap: release cdk-build
-	cdk bootstrap --app "node dev/cdk/dist/index"
+	cdk bootstrap --profile playground --app "node dev/cdk/dist/index"
 
 deploy-devo: release cdk-build
 	cdk deploy $(USER)-playground-api-stack --profile playground --app "node dev/cdk/dist/index" --require-approval never

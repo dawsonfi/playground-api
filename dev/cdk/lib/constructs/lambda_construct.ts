@@ -1,6 +1,6 @@
 import { Duration, CfnOutput } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
-import { Function, Runtime, Alias, Version, AssetCode, FunctionUrl, FunctionUrlOptions } from 'aws-cdk-lib/aws-lambda'
+import {Function, Runtime, Alias, Version, AssetCode, FunctionUrl, FunctionUrlOptions, Architecture} from 'aws-cdk-lib/aws-lambda'
 import { ILambdaDeploymentConfig, LambdaDeploymentGroup } from 'aws-cdk-lib/aws-codedeploy'
 import { LambdaDeploymentConfig } from 'aws-cdk-lib/aws-codedeploy'
 import { FunctionUrlAuthType } from 'aws-cdk-lib/aws-lambda'
@@ -24,6 +24,7 @@ export class LambdaConstruct extends Function {
       code: new AssetCode(props.brazilPackagePath),
       description: `Generated on: ${new Date().toISOString()}`,
       runtime: Runtime.PROVIDED_AL2,
+      architecture: Architecture.ARM_64,
       handler: 'doesnt.matter'
     })
     this.id = id;

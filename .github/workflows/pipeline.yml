@@ -74,7 +74,7 @@ jobs:
       with:
         crate: cargo-lambda
     - name: Build Release
-      run: cargo lambda build --release --x86-64
+      run: cargo lambda build --release --arm64
     - uses: actions/upload-artifact@v3
       with:
         name: bootstrap
